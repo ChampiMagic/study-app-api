@@ -17,40 +17,12 @@ const schema = new Schema({
                         type: Boolean,
                         default: true
                      },
-            cards: {
-                      type: [Schema.Types.ObjectId],
-                      ref: 'Card'
-                   }
-        },
-        {
-            isEmpty: {
-                        type: Boolean,
-                        default: true
-                     },
-            cards: {
-                      type: [Schema.Types.ObjectId],
-                      ref: 'Card'
-                   }
-        },
-        {
-            isEmpty: {
-                        type: Boolean,
-                        default: true
-                     },
-            cards: {
-                      type: [Schema.Types.ObjectId],
-                      ref: 'Card'
-                   }
-        },
-        {
-            isEmpty: {
-                        type: Boolean,
-                        default: true
-                     },
-            cards: {
-                      type: [Schema.Types.ObjectId],
-                      ref: 'Card'
-                   }
+            cards: [
+                     {
+                       type: [Schema.Types.ObjectId],
+                       ref: 'Card'
+                     }
+                   ]
         }
     ]
 },{

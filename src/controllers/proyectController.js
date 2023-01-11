@@ -5,6 +5,10 @@ import Proyect from '../models/project.js'
 //import constructors
 import { errorCreator, ResponseCreator } from '../../utils/responseCreator.js'
 
+// Others imports
+import { defaultBoxes } from '../../utils/defaultBoxes.js'
+
+
 
 //  -----PRIVATE CONTROLLERS-----  //
 
@@ -21,6 +25,7 @@ export const createProyect = async (req, res, next) => {
     Proyect.create({
         name,
         tag,
+        boxes: defaultBoxes
     })
     .then(async newProyect => {
 
