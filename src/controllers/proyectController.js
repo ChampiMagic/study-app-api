@@ -28,7 +28,7 @@ export const createProyect = async (req, res, next) => {
         user.projects.push(newProyect)
         await user.save()
 
-        const updatedUser =  await User.findById(req.userData.id).populate("projects")
+        const updatedUser =  await User.findById(req.userData.id).populate({ path: 'projects', model: 'Project', transform: (doc) => {return doc.toObject()} })
          
         res.send(new ResponseCreator('Proyect created Successfully', 201, {updatedUser}))
 
