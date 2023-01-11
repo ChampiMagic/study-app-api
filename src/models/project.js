@@ -13,8 +13,44 @@ const schema = new Schema({
     },
     boxes: [
         {
-            type: [Schema.Types.ObjectId],
-            ref: 'Box'
+            isEmpty: {
+                        type: Boolean,
+                        default: true
+                     },
+            cards: {
+                      type: [Schema.Types.ObjectId],
+                      ref: 'Card'
+                   }
+        },
+        {
+            isEmpty: {
+                        type: Boolean,
+                        default: true
+                     },
+            cards: {
+                      type: [Schema.Types.ObjectId],
+                      ref: 'Card'
+                   }
+        },
+        {
+            isEmpty: {
+                        type: Boolean,
+                        default: true
+                     },
+            cards: {
+                      type: [Schema.Types.ObjectId],
+                      ref: 'Card'
+                   }
+        },
+        {
+            isEmpty: {
+                        type: Boolean,
+                        default: true
+                     },
+            cards: {
+                      type: [Schema.Types.ObjectId],
+                      ref: 'Card'
+                   }
         }
     ]
 },{

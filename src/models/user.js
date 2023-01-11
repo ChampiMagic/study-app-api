@@ -17,15 +17,12 @@ const schema = new Schema({
         type: String,
         required: false
     },
-    projects: {
-        type: [
-            {
-                type: [Schema.Types.ObjectId],
-                ref: 'Project'
-           }
-        ],
-        required: false
-    }
+    projects:[
+                {
+                    type: [Schema.Types.ObjectId],
+                    ref: 'Project'
+                }
+             ],
 },{
     versionKey: false 
 })

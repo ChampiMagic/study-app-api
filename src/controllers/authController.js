@@ -36,8 +36,7 @@ export const register = async (req, res, next) => {
 
         //token data
         const userForToken = {
-            _id: newUser._id,
-            isStudent: newUser.isStudent
+            id: newUser._id,
         }
 
         //creating token
@@ -74,8 +73,7 @@ export const login = async (req, res, next) => {
 
         //token data
         const userForToken = {
-            _id: user._id,
-            isStudent: user.isStudent
+            id: user._id,
         }
 
         //creating token
