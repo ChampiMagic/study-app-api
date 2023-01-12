@@ -1,26 +1,26 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
+import mongooseUniqueValidator from 'mongoose-unique-validator'
 const { Schema, model } = mongoose
-import mongooseUniqueValidator from "mongoose-unique-validator"
 
 const schema = new Schema({
-   name: {
+  name: {
     type: String,
     required: true
-   },
-   isEmpty: {
+  },
+  isEmpty: {
     type: Boolean,
-    default: true,
-   },
-   cards: [
-        {
-            type: [Schema.Types.ObjectId],
-            ref: 'Card'
-        }
-   ]
-},{
-    versionKey: false 
+    default: true
+  },
+  cards: [
+    {
+      type: [Schema.Types.ObjectId],
+      ref: 'Card'
+    }
+  ]
+}, {
+  versionKey: false
 })
 
-schema.plugin(mongooseUniqueValidator);
+schema.plugin(mongooseUniqueValidator)
 
 export default model('Box', schema)

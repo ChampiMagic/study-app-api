@@ -11,7 +11,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "2.0.20"
+    "nodemon": "2.0.20",
+    "standard": "^17.0.0"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
@@ -22,5 +23,10 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.8.0",
     "mongoose-unique-validator": "^3.1.0"
+  },
+  "eslintConfig": {
+    "extends": [
+      "./node_modules/standard/eslintrc.json"
+    ]
   }
 }
