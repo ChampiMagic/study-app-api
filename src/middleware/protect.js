@@ -1,30 +1,28 @@
-//import other dependencies
+// import other dependencies
 import jwt from 'jsonwebtoken'
-import 'dotenv/config';
+import 'dotenv/config'
 
-//import constructor
-import { errorCreator } from '../../utils/responseCreator.js';
-
+// import constructor
+import { ErrorCreator } from '../../utils/responseCreator.js'
 
 export const protect = (req, res, next) => {
+  const { authorization } = req.headers
 
-    const { authorization } = req.headers
-   
-    let token = ''
+  let token = ''
 
-    if(authorization && authorization.toLowerCase().startsWith('bearer')) {
-        token = authorization.substring(7)
-    }
+  if (authorization && authorization.toLowerCase().startsWith('bearer')) {
+    token = authorization.substring(7)
+  }
 
-    const decodeToken = jwt.verify(token, process.env.SECRET_WORD)
+  const decodeToken = jwt.verify(token, process.env.SECRET_WORD)
 
-    if(!token || !decodeToken.id) {
-        next(new errorCreator('token is missing or invalid', 401))
-    }
+  if (!token || !decodeToken.id) {
+    next(new ErrorCreator('token is missing or invalid', 401))
+  }
 
-    req.userData = {
-        id: decodeToken.id,
-    }
+  req.userData = {
+    id: decodeToken.id
+  }
 
-    next()
+  next()
 }
