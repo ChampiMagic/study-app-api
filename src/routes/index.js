@@ -1,16 +1,23 @@
 // Instance Route
-import { Router } from 'express';
-const router = Router();
+import { Router } from 'express'
 
 // Import Controllers
-import { register, login } from '../controllers/authController.js';
+import { register, login } from '../controllers/authController.js'
+import { createProyect } from '../controllers/proyectController.js'
 
+import { protect } from '../middleware/protect.js'
+const router = Router()
 
+// PUBLIC ROUTES //
 
 // Auth Routes
-router.post('/register', register); 
+router.post('/register', register)
 
-router.post('/login', login); 
+router.post('/login', login)
 
+// PRIVATE ROUTES //
 
-export default router;
+// Projet Routes
+router.post('/create-project', protect, createProyect)
+
+export default router
