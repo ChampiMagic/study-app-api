@@ -13,7 +13,7 @@ const schema = new Schema({
   },
   cards: [
     {
-      type: [Schema.Types.ObjectId],
+      type: Schema.Types.ObjectId,
       ref: 'Card'
     }
   ]
