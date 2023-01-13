@@ -69,7 +69,7 @@ export const getProjectById = async (req, res, next) => {
   try {
     const project = await Proyect.findById(id);
     if (!project) {
-      next(new ErrorCreator("Project not found", 404));
+      return next(new ErrorCreator("Project not found", 404));
     }
     res.send(new ResponseCreator("project found successfully", 200, { project }));
   } catch (err) {
