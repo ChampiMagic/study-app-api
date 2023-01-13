@@ -18,7 +18,7 @@ export const createCard = async (req, res, next) => {
     const newCard = await Card.create({ question, answer });
      project.boxes.map((item) => {
       if (item._id == boxId) {
-        item.cards.push(newCard)
+        item.cards.push(newCard.id)
       }
       return item;
     });
