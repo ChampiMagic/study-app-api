@@ -63,3 +63,17 @@ export const getAllProjects = async (req, res, next) => {
     next(err);
   }
 };
+
+export const getProjectById = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const project = await Proyect.findById(id);
+    if (!project) {
+      next(new ErrorCreator("Project not found", 404));
+    }
+    res.send(new ResponseCreator("project found successfully", 200, { project }));
+  } catch (err) {
+    console.error("ERROR: PROYECTCONTROLLER(getProjectById)");
+    next(err);
+  }
+};
