@@ -49,12 +49,12 @@ export const getAllProjects = async (req, res, next) => {
     }
     if (!parseInt(page) || !parseInt(limit)) {
       let projects = await Proyect.find({ _id: { $in: user.projects } });
-      return res.send(new ResponseCreator("page or limit is null", 201, { count: projects.length, projects }));
+      return res.send(new ResponseCreator("page or limit is null", 200, { count: projects.length, projects }));
     }
     let projects = await Proyect.find({ _id: { $in: user.projects } })
       .limit(parseInt(limit))
       .skip((parseInt(page) - 1) * parseInt(limit));
-    res.send(new ResponseCreator("succes", 201, { count: projects.length, projects }));
+    res.send(new ResponseCreator("success", 200, { count: projects.length, projects }));
   } catch (err) {
     console.error("ERROR: PROYECTCONTROLLER(getAllProjects)");
     next(e);
