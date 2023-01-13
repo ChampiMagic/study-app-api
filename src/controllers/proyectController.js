@@ -37,3 +37,29 @@ export const createProyect = async (req, res, next) => {
       next(err)
     })
 }
+
+export const getAllProjects = async (req, res, next) => {
+  try {
+    const { page, limit } = req.query;
+
+    const user = await User.findById(req.userData.id);
+
+    if (!user) {
+      next(new ErrorCreator("User not found", 404));
+    }
+    if (!parseInt(page) || !parseInt(limit)) {
+      let projects = await Proyect.find({ _id: { $in: user.projects } });
+      return res.send(new ResponseCreator("page or limit is null", 200, { count: projects.length, projects }));
+    }
+
+    const totalPages = Math.ceil(await Proyect.countDocuments({ _id: { $in: user.projects } }) / limit);
+
+    let projects = await Proyect.find({ _id: { $in: user.projects } })
+      .limit(parseInt(limit))
+      .skip((parseInt(page) - 1) * parseInt(limit));
+    res.send(new ResponseCreator("success", 200, {totalPages, count: projects.length, projects }));
+  } catch (err) {
+    console.error("ERROR: PROYECTCONTROLLER(getAllProjects)");
+    next(err);
+  }
+};
