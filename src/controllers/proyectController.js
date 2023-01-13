@@ -57,7 +57,7 @@ export const getAllProjects = async (req, res, next) => {
     let projects = await Proyect.find({ _id: { $in: user.projects } })
       .limit(parseInt(limit))
       .skip((parseInt(page) - 1) * parseInt(limit));
-    res.send(new ResponseCreator("succes", 200, {totalPages, count: projects.length, projects }));
+    res.send(new ResponseCreator("success", 200, {totalPages, count: projects.length, projects }));
   } catch (err) {
     console.error("ERROR: PROYECTCONTROLLER(getAllProjects)");
     next(err);
