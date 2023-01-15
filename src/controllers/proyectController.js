@@ -67,7 +67,7 @@ export const getAllProjects = async (req, res, next) => {
 export const getProjectById = async (req, res, next) => {
   const { id } = req.params;
   try {
-    const project = await Proyect.findById(id);
+    const project = await Proyect.findById(id).populate({model: 'Card', path: 'boxes.cards',transform: (doc,id) => doc ? doc.toObject() : id})
     if (!project) {
       return next(new ErrorCreator("Project not found", 404));
     }
