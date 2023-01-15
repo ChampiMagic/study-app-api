@@ -24,6 +24,6 @@ router.get("/projects", protect, getAllProjects);
 router.get('/projects/:id', protect, getProjectById)
 
 // Card Routes
-router.post('/cards', protect, createCard)
+router.post('/create-card', protect, createCard)
 
 export default router
