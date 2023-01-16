@@ -8,6 +8,11 @@ const schema = new Schema({
     required: true,
     minlength: 3
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true
+  },
   passwordHash: {
     type: String,
     required: true,
@@ -22,8 +27,17 @@ const schema = new Schema({
       type: Schema.Types.ObjectId,
       ref: 'Project'
     }
-  ]
+  ],
+  tags: [
+    {
+      name: {
+        type: String,
+        required: true,
+      }
+    },
+  ],
 }, {
+  timestamps: true,
   versionKey: false
 })
 
