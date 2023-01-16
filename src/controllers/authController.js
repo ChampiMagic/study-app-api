@@ -46,9 +46,9 @@ export const register = async (req, res, next) => {
 }
 
 export const login = async (req, res, next) => {
-  const { username, password } = req.body
+  const { email, password } = req.body
 
-  const user = await User.findOne({ username }).populate({ path: 'projects', model: 'Project', transform: (doc, id) => { return doc == null ? id : doc } })
+  const user = await User.findOne({ email }).populate({ path: 'projects', model: 'Project', transform: (doc, id) => { return doc == null ? id : doc } })
 
   // user verification
   const passwordCorrect = user === null
