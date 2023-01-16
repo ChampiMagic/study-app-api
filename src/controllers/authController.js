@@ -12,7 +12,7 @@ import 'dotenv/config'
 //  -----PUBLIC CONTROLLERS-----  //
 
 export const register = async (req, res, next) => {
-  const { username, password } = req.body
+  const { username, email, password } = req.body;
 
   const user = await User.findOne({ username })
 
@@ -26,6 +26,7 @@ export const register = async (req, res, next) => {
 
   User.create({
     username,
+    email,
     passwordHash
   })
     .then(newUser => {
