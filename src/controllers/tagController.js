@@ -8,8 +8,8 @@ export const crateTag = async (req, res, next) => {
   const newTag = { name: req.body.name };
   try {
     const user = await User.findByIdAndUpdate(req.userData.id, { $push: { tags: newTag } }, { new: true });
-    if (!user) return next(new ErrorCreator('User Not Found', 404));
-    res(new ResponseCreator('Successfully created new Tag', 200, {user}));
+    if (!user) return next(new ErrorCreator("User Not Found", 404));
+    res.send(new ResponseCreator("Successfully created new Tag", 200, { user }));
   } catch (err) {
     console.log("ERROR: PROYECTCONTROLLER(createTag)");
     next(err);

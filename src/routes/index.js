@@ -7,6 +7,7 @@ import { createProyect, getAllProjects, getProjectById} from '../controllers/pro
 import { createCard,moveCard, updateCard } from '../controllers/cardController.js'
 
 import { protect } from '../middleware/protect.js'
+import { crateTag } from '../controllers/tagController.js'
 const router = Router()
 
 // PUBLIC ROUTES //
@@ -27,5 +28,8 @@ router.get('/projects/:id', protect, getProjectById)
 router.post('/create-card', protect, createCard)
 router.put('/move-card', protect,moveCard )
 router.get('/update-card', protect, updateCard)
+
+//Tag Routes 
+router.post("/create-tag", protect, crateTag);
 
 export default router
