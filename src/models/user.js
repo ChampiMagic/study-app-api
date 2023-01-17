@@ -31,11 +31,9 @@ const schema = new Schema({
   ],
   tags: [
     {
-      name: {
-        type: String,
-        required: true,
-      }
-    },
+      type: Schema.Types.ObjectId,
+      ref: 'Tag'
+    }
   ],
 }, {
   timestamps: true,
