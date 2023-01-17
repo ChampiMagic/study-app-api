@@ -63,9 +63,9 @@ export const moveCard = async (req, res, next) => {
 };
 
 export const updateCard = async (req, res, next) => {
-  const { _id, question, answer } = req.body;
+  const { id, question, answer } = req.body;
   try {
-    const card = await Card.findById(_id);
+    const card = await Card.findById(id);
     if (!card) return next(new ErrorCreator("Card Not Found", 404));
 
     //update and save
