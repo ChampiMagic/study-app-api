@@ -4,7 +4,7 @@ import { Router } from 'express'
 // Import Controllers
 import { register, login } from '../controllers/authController.js'
 import { createProyect, getAllProjects, getProjectById} from '../controllers/proyectController.js'
-import { createCard,moveCard } from '../controllers/cardController.js'
+import { createCard,moveCard, updateCard } from '../controllers/cardController.js'
 
 import { protect } from '../middleware/protect.js'
 const router = Router()
@@ -26,5 +26,6 @@ router.get('/projects/:id', protect, getProjectById)
 // Card Routes
 router.post('/create-card', protect, createCard)
 router.put('/move-card', protect,moveCard )
+router.get('/update-card', protect, updateCard)
 
 export default router
