@@ -26,6 +26,6 @@ router.get('/projects/:id', protect, getProjectById)
 // Card Routes
 router.post('/create-card', protect, createCard)
 router.put('/move-card', protect,moveCard )
-router.get('/update-card', protect, updateCard)
+router.put('/update-card', protect, updateCard)
 
 export default router
