@@ -4,7 +4,7 @@ import Tag from '../models/Tag.js';
 // import constructors
 import { ErrorCreator, ResponseCreator } from "../../utils/responseCreator.js";
 
-export const crateTag = async (req, res, next) => {
+export const createTag = async (req, res, next) => {
   const tag = {name: req.body.name}
   try {
     const user = await User.findById(req.userData.id);
