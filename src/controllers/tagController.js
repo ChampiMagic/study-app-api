@@ -14,7 +14,7 @@ export const crateTag = async (req, res, next) => {
     const newTag = await Tag.create(tag);
 
     //udpate user
-    user.tags.push(newTag);
+    user.tags.push(newTag._id)
     await user.save();
 
     res.send(new ResponseCreator("Successfully created new Tag", 200, { user, tag: newTag }));
