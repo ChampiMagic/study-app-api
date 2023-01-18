@@ -13,4 +13,4 @@ const schema = new Schema({
 
 schema.plugin(mongooseUniqueValidator)
 
-export default model('Box', schema)
+export default model('Tag', schema)
