@@ -19,7 +19,7 @@ export const createTag = async (req, res, next) => {
 
     res.send(new ResponseCreator("Successfully created new Tag", 200, { user, tag: newTag }));
   } catch (err) {
-    console.log("ERROR: PROYECTCONTROLLER(createTag)");
+    console.log("ERROR: TAGCONTROLLER(createTag)");
     next(err);
   }
 };
