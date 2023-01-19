@@ -11,12 +11,12 @@ import { defaultBoxes } from '../../utils/defaultBoxes.js'
 //  -----PRIVATE CONTROLLERS-----  //
 
 export const createProject = async (req, res, next) => {
-  const project = {name: req.body.name, tag: req.body.tag, boxes: defaultBoxes}
+  const project = { name: req.body.name, tag: req.body.tag, boxes: defaultBoxes }
 
   const user = await User.findById(req.userData.id)
 
   if (!user) {
-   return next(new ErrorCreator('User not found', 404))
+    return next(new ErrorCreator('User not found', 404))
   }
 
   Project.create(project)
@@ -33,40 +33,40 @@ export const createProject = async (req, res, next) => {
 
 export const getAllProjects = async (req, res, next) => {
   try {
-    const { page, limit } = req.query;
+    const { page, limit } = req.query
 
-    const user = await User.findById(req.userData.id);
+    const user = await User.findById(req.userData.id)
 
     if (!user) {
-      next(new ErrorCreator("User not found", 404));
+      next(new ErrorCreator('User not found', 404))
     }
     if (!parseInt(page) || !parseInt(limit)) {
-      let projects = await Project.find({ _id: { $in: user.projects } });
-      return res.send(new ResponseCreator("page or limit is null", 200, { count: projects.length, projects }));
+      const projects = await Project.find({ _id: { $in: user.projects } })
+      return res.send(new ResponseCreator('page or limit is null', 200, { count: projects.length, projects }))
     }
 
-    const totalPages = Math.ceil(await Project.countDocuments({ _id: { $in: user.projects } }) / limit);
+    const totalPages = Math.ceil(await Project.countDocuments({ _id: { $in: user.projects } }) / limit)
 
-    let projects = await Project.find({ _id: { $in: user.projects } })
+    const projects = await Project.find({ _id: { $in: user.projects } })
       .limit(parseInt(limit))
-      .skip((parseInt(page) - 1) * parseInt(limit));
-    res.send(new ResponseCreator("success", 200, {totalPages, count: projects.length, projects }));
+      .skip((parseInt(page) - 1) * parseInt(limit))
+    res.send(new ResponseCreator('success', 200, { totalPages, count: projects.length, projects }))
   } catch (err) {
-    console.error("ERROR: PROJECTCONTROLLER(getAllProjects)");
-    next(err);
+    console.error('ERROR: PROJECTCONTROLLER(getAllProjects)')
+    next(err)
   }
-};
+}
 
 export const getProjectById = async (req, res, next) => {
-  const { id } = req.params;
+  const { id } = req.params
   try {
-    const project = await Project.findById(id).populate({model: 'Card', path: 'boxes.cards',transform: (doc,id) => doc ? doc.toObject() : id})
+    const project = await Project.findById(id).populate({ model: 'Card', path: 'boxes.cards', transform: (doc, id) => doc ? doc.toObject() : id })
     if (!project) {
-      return next(new ErrorCreator("Project not found", 404));
+      return next(new ErrorCreator('Project not found', 404))
     }
-    res.send(new ResponseCreator("project found successfully", 200, { project }));
+    res.send(new ResponseCreator('project found successfully', 200, { project }))
   } catch (err) {
-    console.error("ERROR: PROJECTCONTROLLER(getProjectById)");
-    next(err);
+    console.error('ERROR: PROJECTCONTROLLER(getProjectById)')
+    next(err)
   }
-};
+}
