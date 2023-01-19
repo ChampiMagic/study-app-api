@@ -3,7 +3,7 @@ import { Router } from 'express'
 
 // Import Controllers
 import { register, login } from '../controllers/authController.js'
-import { createProyect, getAllProjects, getProjectById} from '../controllers/proyectController.js'
+import { createProject, getAllProjects, getProjectById} from '../controllers/projectController.js'
 import { createCard,moveCard, updateCard } from '../controllers/cardController.js'
 import { createTag, getTags } from '../controllers/tagController.js'
 
@@ -21,7 +21,7 @@ router.post('/login', login)
 // PRIVATE ROUTES //
 
 // Projet Routes
-router.post('/create-project', protect, createProyect)
+router.post('/create-project', protect, createProject)
 router.get("/projects", protect, getAllProjects);
 router.get('/projects/:id', protect, getProjectById)
 
