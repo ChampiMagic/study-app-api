@@ -23,3 +23,18 @@ export const createTag = async (req, res, next) => {
     next(err);
   }
 };
+
+
+export const getTags = async (req, res, next) => {
+  try {
+    //populate tags
+    const user = await User.findById(req.userData.id);
+    if (!user) return next(new ErrorCreator("User Not Found", 404));
+    const tags = await Tag.find({ _id: { $in: user.tags } });
+
+    res.send(new ResponseCreator("Successfully fetched all Tags", 200, { tags}));
+  } catch (err) {
+    console.log("ERROR: TAGCONTROLLER(getTags)");
+    next(err);
+  }
+}
