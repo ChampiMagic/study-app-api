@@ -29,7 +29,7 @@ const schema = new Schema({
       ref: 'Project'
     }
   ],
-  tags: [
+ tags: [
     {
       type: Schema.Types.ObjectId,
       ref: 'Tag'
