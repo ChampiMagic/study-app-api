@@ -5,7 +5,7 @@ import { Router } from 'express'
 import { register, login } from '../controllers/authController.js'
 import { createProject, getAllProjects, getProjectById } from '../controllers/projectController.js'
 import { createCard, moveCard, updateCard } from '../controllers/cardController.js'
-import { createTag, getTags } from '../controllers/tagController.js'
+import { createTag, getTags, getTagsByName } from '../controllers/tagController.js'
 
 import { protect } from '../middleware/protect.js'
 const router = Router()
@@ -31,5 +31,6 @@ router.get('/update-card', protect, updateCard)
 // Tag Routes
 router.post('/create-tag', protect, createTag)
 router.get('/tags', protect, getTags)
+router.get('/tags/:name', protect, getTagsByName)
 
 export default router
