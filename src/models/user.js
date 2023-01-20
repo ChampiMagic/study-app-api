@@ -12,7 +12,7 @@ const schema = new Schema({
     type: String,
     required: true,
     unique: true,
-    minlength: 3,
+    minlength: 3
   },
   passwordHash: {
     type: String,
@@ -34,7 +34,7 @@ const schema = new Schema({
       type: Schema.Types.ObjectId,
       ref: 'Tag'
     }
-  ],
+  ]
 }, {
   timestamps: true,
   versionKey: false
