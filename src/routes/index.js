@@ -3,7 +3,7 @@ import { Router } from 'express'
 
 // Import Controllers
 import { register, login } from '../controllers/authController.js'
-import { createProject, getAllProjects, getProjectById } from '../controllers/projectController.js'
+import { createProject, getAllProjects, getProjectById, getProjectsByName } from '../controllers/projectController.js'
 import { createCard, moveCard, updateCard } from '../controllers/cardController.js'
 import { createTag, getTags, getTagsByName } from '../controllers/tagController.js'
 
@@ -22,6 +22,7 @@ router.post('/login', login)
 router.post('/create-project', protect, createProject)
 router.get('/projects', protect, getAllProjects)
 router.get('/projects/:id', protect, getProjectById)
+router.get('/search-projects/:name', protect, getProjectsByName)
 
 // Card Routes
 router.post('/create-card', protect, createCard)
