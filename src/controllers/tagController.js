@@ -37,3 +37,19 @@ export const getTags = async (req, res, next) => {
     next(err)
   }
 }
+
+export const getTagsByName = async (req, res, next) => {
+  const { name } = req.params
+  try {
+    const user = await User.findById(req.userData.id)
+    if (!user) return next(new ErrorCreator('User Not Found', 404))
+    const tags = await Tag.find({ _id: { $in: user.tags } })
+
+    // filter tags
+    const filteredTags = tags.filter(tag => tag.name.toLowerCase().includes(name.toLowerCase()))
+    res.send(new ResponseCreator('Successfully fetched all Tags', 200, { tags: filteredTags }))
+  } catch (err) {
+    console.log('ERROR: TAGCONTROLLER(getTagsByName)')
+    next(err)
+  }
+}
