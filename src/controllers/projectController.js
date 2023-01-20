@@ -70,3 +70,21 @@ export const getProjectById = async (req, res, next) => {
     next(err)
   }
 }
+
+export const getProjectsByName = async (req, res, next) => {
+  const { name } = req.params
+  try {
+    const user = await User.findById(req.userData.id)
+    if (!user) {
+      return next(new ErrorCreator('User not found', 404))
+    }
+    const projects = await Project.find({ _id: { $in: user.projects } })
+
+    // Filter projects by name
+    const filteredProjects = projects.filter(project => project.name.toLowerCase().includes(name.toLowerCase()))
+    res.send(new ResponseCreator('success', 200, { projects: filteredProjects }))
+  } catch (err) {
+    console.error('ERROR: PROJECTCONTROLLER(getProjectsByName)')
+    next(err)
+  }
+}
