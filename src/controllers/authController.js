@@ -12,7 +12,7 @@ import 'dotenv/config'
 //  -----PUBLIC CONTROLLERS-----  //
 
 export const register = async (req, res, next) => {
-  const { username, email, password } = req.body;
+  const { username, email, password } = req.body
 
   const user = await User.findOne({ username })
 
@@ -48,7 +48,7 @@ export const register = async (req, res, next) => {
 export const login = async (req, res, next) => {
   const { email, password } = req.body
 
-  const user = await User.findOne({ email }).populate({ path: 'projects', model: 'Project', transform: (doc, id) => { return doc == null ? id : doc } })
+  const user = await User.findOne({ email })
 
   // user verification
   const passwordCorrect = user === null
