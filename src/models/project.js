@@ -8,8 +8,8 @@ const schema = new Schema({
     required: true
   },
   tag: {
-    type: String,
-    required: false
+    type: Schema.Types.ObjectId,
+    ref: 'Tag'
   },
   boxes: [
     {

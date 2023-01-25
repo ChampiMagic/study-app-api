@@ -17,7 +17,7 @@ export const createTag = async (req, res, next) => {
     user.tags.push(newTag._id)
     await user.save()
 
-    res.send(new ResponseCreator('Successfully created new Tag', 200, { user, tag: newTag }))
+    res.send(new ResponseCreator('Successfully created new Tag', 200, { tag: newTag }))
   } catch (err) {
     console.log('ERROR: TAGCONTROLLER(createTag)')
     next(err)
@@ -45,11 +45,45 @@ export const getTagsByName = async (req, res, next) => {
     if (!user) return next(new ErrorCreator('User Not Found', 404))
     const tags = await Tag.find({ _id: { $in: user.tags } })
 
+    if (name === 'null') return res.send(new ResponseCreator('success', 200, { tags }))
+
     // filter tags
     const filteredTags = tags.filter(tag => tag.name.toLowerCase().includes(name.toLowerCase()))
+
+    if (!filteredTags.length) return next(new ErrorCreator('Tag Not Found', 404))
+
     res.send(new ResponseCreator('Successfully fetched all Tags', 200, { tags: filteredTags }))
   } catch (err) {
     console.log('ERROR: TAGCONTROLLER(getTagsByName)')
+    next(err)
+  }
+}
+
+export const updateTag = async (req, res, next) => {
+  const { name, tagId } = req.body
+  try {
+    const tag = await Tag.findById(tagId)
+    if (!tag) return next(new ErrorCreator('Tag Not Found', 404))
+
+    // update tag
+    tag.name = name
+    await tag.save()
+
+    res.send(new ResponseCreator('Successfully Tag updated', 200, { tag }))
+  } catch (err) {
+    console.log('ERROR: TAGCONTROLLER(updateTag)')
+    next(err)
+  }
+}
+
+export const deleteTag = async (req, res, next) => {
+  const { tagId } = req.params
+  try {
+    await Tag.findByIdAndDelete(tagId)
+
+    res.send(new ResponseCreator('Successfully Tag deleted', 200, { }))
+  } catch (err) {
+    console.log('ERROR: TAGCONTROLLER(deleteTag)')
     next(err)
   }
 }
