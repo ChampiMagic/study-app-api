@@ -22,9 +22,13 @@ export const createProject = async (req, res, next) => {
   Project.create(project)
     .then(async newProject => {
       // Add new project to user
+
       user.projects.push(newProject._id)
       await user.save()
-      res.send(new ResponseCreator('Project created Successfully', 201, { project: newProject }))
+
+      const populatedProject = await Project.findById(newProject._id).populate({ path: 'tag', model: 'Tag', transform: (doc, id) => { return doc == null ? id : doc } })
+
+      res.send(new ResponseCreator('Project created Successfully', 201, { project: populatedProject }))
     }).catch(err => {
       console.error('ERROR: PROJECTCONTROLLER(CREATE)')
       next(err)
@@ -33,24 +37,11 @@ export const createProject = async (req, res, next) => {
 
 export const getAllProjects = async (req, res, next) => {
   try {
-    const { page, limit } = req.query
-
     const user = await User.findById(req.userData.id)
 
-    if (!user) {
-      next(new ErrorCreator('User not found', 404))
-    }
-    if (!parseInt(page) || !parseInt(limit)) {
-      const projects = await Project.find({ _id: { $in: user.projects } })
-      return res.send(new ResponseCreator('page or limit is null', 200, { count: projects.length, projects }))
-    }
+    const projects = await Project.find({ _id: { $in: user.projects } }).populate({ path: 'tag', model: 'Tag', transform: (doc, id) => { return doc == null ? id : doc } })
 
-    const totalPages = Math.ceil(await Project.countDocuments({ _id: { $in: user.projects } }) / limit)
-
-    const projects = await Project.find({ _id: { $in: user.projects } })
-      .limit(parseInt(limit))
-      .skip((parseInt(page) - 1) * parseInt(limit))
-    res.send(new ResponseCreator('success', 200, { totalPages, count: projects.length, projects }))
+    res.send(new ResponseCreator('success', 200, { projects }))
   } catch (err) {
     console.error('ERROR: PROJECTCONTROLLER(getAllProjects)')
     next(err)
@@ -75,13 +66,18 @@ export const getProjectsByName = async (req, res, next) => {
   const { name } = req.params
   try {
     const user = await User.findById(req.userData.id)
+
     if (!user) {
       return next(new ErrorCreator('User not found', 404))
     }
-    const projects = await Project.find({ _id: { $in: user.projects } })
+
+    const projects = await Project.find({ _id: { $in: user.projects } }).populate({ path: 'tag', model: 'Tag', transform: (doc, id) => { return doc == null ? id : doc } })
+
+    if (name === 'null') return res.send(new ResponseCreator('success', 200, { projects }))
 
     // Filter projects by name
     const filteredProjects = projects.filter(project => project.name.toLowerCase().includes(name.toLowerCase()))
+
     res.send(new ResponseCreator('success', 200, { projects: filteredProjects }))
   } catch (err) {
     console.error('ERROR: PROJECTCONTROLLER(getProjectsByName)')
