@@ -3,8 +3,8 @@ import { Router } from 'express'
 
 // Import Controllers
 import { register, login } from '../controllers/authController.js'
-import { createProject, getAllProjects, getProjectById, getProjectsByName } from '../controllers/projectController.js'
-import { createCard, moveCard, updateCard } from '../controllers/cardController.js'
+import { createProject, deleteProject, getAllProjects, getProjectById, getProjectsByName } from '../controllers/projectController.js'
+import { createCard, deleteCard, getAllCards, getCardByName, moveCard, randomCard, updateCard } from '../controllers/cardController.js'
 import { createTag, deleteTag, getTags, getTagsByName, updateTag } from '../controllers/tagController.js'
 
 import { protect } from '../middleware/protect.js'
@@ -23,11 +23,16 @@ router.post('/create-project', protect, createProject)
 router.get('/projects', protect, getAllProjects)
 router.get('/project/:id', protect, getProjectById)
 router.get('/search-projects/:name', protect, getProjectsByName)
+router.delete('/delete-project/:projectId', protect, deleteProject)
 
 // Card Routes
 router.post('/create-card', protect, createCard)
 router.put('/move-card', protect, moveCard)
-router.get('/update-card', protect, updateCard)
+router.put('/update-card', protect, updateCard)
+router.get('/random-card', protect, randomCard)
+router.get('/card', protect, getAllCards)
+router.get('/search-card', protect, getCardByName)
+router.delete('/delete-card', protect, deleteCard)
 
 // Tag Routes
 router.post('/create-tag', protect, createTag)

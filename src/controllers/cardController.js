@@ -79,3 +79,84 @@ export const updateCard = async (req, res, next) => {
     next(err)
   }
 }
+
+export const randomCard = async (req, res, next) => {
+  const { projectId, box } = req.query
+  try {
+    const project = await Project.findById(projectId).populate({ path: 'boxes.cards', model: 'Card', transform: (doc, id) => { return doc == null ? id : doc } })
+
+    if (!project) return next(new ErrorCreator('Project Not Found', 404))
+
+    const actualBox = project.boxes[box]
+    if (!actualBox.cards.length) return next(new ErrorCreator('Box is empty', 404))
+    const randomCard = actualBox.cards[Math.floor(Math.random() * actualBox.cards.length)]
+
+    res.send(new ResponseCreator('Successfully', 200, { card: randomCard }))
+  } catch (err) {
+    console.error('ERROR: CARDCONTROLLER(randomCard)')
+    next(err)
+  }
+}
+
+export const getAllCards = async (req, res, next) => {
+  const { projectId } = req.query
+  try {
+    const project = await Project.findById(projectId).populate({ path: 'boxes.cards', model: 'Card', transform: (doc, id) => { return doc == null ? id : doc } })
+
+    if (!project) return next(new ErrorCreator('Project Not Found', 404))
+
+    let allCards = []
+    project.boxes.forEach((b) => {
+      allCards = [...allCards, ...b.cards]
+    })
+
+    res.send(new ResponseCreator('Successfully', 200, { cards: allCards }))
+  } catch (err) {
+    console.error('ERROR: CARDCONTROLLER(getAllCards)')
+    next(err)
+  }
+}
+
+export const getCardByName = async (req, res, next) => {
+  const { projectId, question } = req.query
+  try {
+    const project = await Project.findById(projectId).populate({ path: 'boxes.cards', model: 'Card', transform: (doc, id) => { return doc == null ? id : doc } })
+
+    if (!project) return next(new ErrorCreator('Project Not Found', 404))
+
+    const searchCards = []
+    console.log(project.boxes[0])
+    project.boxes.forEach((b) => {
+      b.cards.forEach((c) => {
+        if (c) {
+          if (c.question.toLowerCase().includes(question.toLowerCase())) searchCards.push(c)
+        }
+      })
+    })
+
+    res.send(new ResponseCreator('Successfully', 200, { cards: searchCards }))
+  } catch (err) {
+    console.error('ERROR: CARDCONTROLLER(getCardByName)')
+    next(err)
+  }
+}
+
+export const deleteCard = async (req, res, next) => {
+  const { cardId, projectId } = req.query
+  try {
+    const project = await Project.findById(projectId)
+
+    project.boxes.forEach((b) => {
+      b.cards.pull(cardId)
+    })
+
+    project.save()
+
+    await Card.findByIdAndDelete(cardId)
+
+    res.send(new ResponseCreator('Successfully Card Deleted', 200, { }))
+  } catch (err) {
+    console.error('ERROR: CARDCONTROLLER(deleteCard)')
+    next(err)
+  }
+}
