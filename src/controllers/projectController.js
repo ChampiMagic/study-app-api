@@ -51,7 +51,7 @@ export const getAllProjects = async (req, res, next) => {
 export const getProjectById = async (req, res, next) => {
   const { id } = req.params
   try {
-    const project = await Project.findById(id).populate({ model: 'Card', path: 'boxes.cards', transform: (doc, id) => doc ? doc.toObject() : id })
+    const project = await Project.findById(id).populate({ path: 'tag', model: 'Tag', transform: (doc, id) => { return doc == null ? id : doc } })
     if (!project) {
       return next(new ErrorCreator('Project not found', 404))
     }
@@ -81,6 +81,24 @@ export const getProjectsByName = async (req, res, next) => {
     res.send(new ResponseCreator('success', 200, { projects: filteredProjects }))
   } catch (err) {
     console.error('ERROR: PROJECTCONTROLLER(getProjectsByName)')
+    next(err)
+  }
+}
+
+export const deleteProject = async (req, res, next) => {
+  const { projectId } = req.params
+  try {
+    const user = await User.findById(req.userData.id)
+
+    user.projects.pull(projectId)
+
+    user.save()
+
+    await Project.findByIdAndDelete(projectId)
+
+    res.send(new ResponseCreator('success', 200, {}))
+  } catch (err) {
+    console.error('ERROR: PROJECTCONTROLLER(deleteProject)')
     next(err)
   }
 }
