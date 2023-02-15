@@ -102,7 +102,7 @@ export const getAllCards = async (req, res, next) => {
   const { projectId } = req.query
   try {
     const project = await Project.findById(projectId).populate({ path: 'boxes.cards', model: 'Card', transform: (doc, id) => { return doc == null ? id : doc } })
-
+    console.log(project)
     if (!project) return next(new ErrorCreator('Project Not Found', 404))
 
     let allCards = []
@@ -124,15 +124,22 @@ export const getCardByName = async (req, res, next) => {
 
     if (!project) return next(new ErrorCreator('Project Not Found', 404))
 
-    const searchCards = []
-    console.log(project.boxes[0])
-    project.boxes.forEach((b) => {
-      b.cards.forEach((c) => {
-        if (c) {
-          if (c.question.toLowerCase().includes(question.toLowerCase())) searchCards.push(c)
-        }
+    let searchCards = []
+
+    if (question === 'null') {
+      project.boxes.forEach((b) => {
+        searchCards = [...searchCards, ...b.cards]
       })
-    })
+    } else {
+      project.boxes.forEach((b) => {
+        b.cards.forEach((c) => {
+          if (c) {
+            console.log(c.question.toLowerCase().includes(question.toLowerCase()))
+            if (c.question.toLowerCase().includes(question.toLowerCase())) searchCards.push(c)
+          }
+        })
+      })
+    }
 
     res.send(new ResponseCreator('Successfully', 200, { cards: searchCards }))
   } catch (err) {

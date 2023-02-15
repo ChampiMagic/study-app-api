@@ -102,3 +102,21 @@ export const deleteProject = async (req, res, next) => {
     next(err)
   }
 }
+
+export const updateProject = async (req, res, next) => {
+  const { projectId, name, tagId } = req.body
+  console.log(req.body)
+  const updatedProject = await Project.findByIdAndUpdate(projectId, { name, tag: tagId })
+
+  if (!updatedProject) {
+    return next(new ErrorCreator('Project not found', 404))
+  }
+  try {
+    const populatedProject = await Project.findById(projectId).populate({ path: 'tag', model: 'Tag', transform: (doc, id) => { return doc == null ? id : doc } })
+
+    res.send(new ResponseCreator('Project updated Successfully', 201, { project: populatedProject }))
+  } catch (err) {
+    console.error('ERROR: PROJECTCONTROLLER(CREATE)')
+    next(err)
+  }
+}
