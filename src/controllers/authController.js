@@ -5,8 +5,10 @@ import User from '../models/user.js'
 import { ErrorCreator, ResponseCreator } from '../../utils/responseCreator.js'
 
 // other dependencies
-import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import crypto from 'crypto'
+import { sendEmail } from '../../utils/sendEmail.js'
+import { forgotMessage } from '../../utils/emailTemplates.js'
 import 'dotenv/config'
 
 //  -----PUBLIC CONTROLLERS-----  //
@@ -20,14 +22,10 @@ export const register = async (req, res, next) => {
     next(new ErrorCreator('user already exists', 409))
   }
 
-  // password encryption
-  const salt = await bcrypt.genSalt()
-  const passwordHash = await bcrypt.hash(password, salt)
-
   User.create({
     username,
     email,
-    passwordHash
+    password
   })
     .then(newUser => {
       // token data
@@ -50,13 +48,8 @@ export const login = async (req, res, next) => {
 
   const user = await User.findOne({ email })
 
-  // user verification
-  const passwordCorrect = user === null
-    ? false
-    : await bcrypt.compare(password, user.passwordHash)
-
   // bad request
-  if (!(user && passwordCorrect)) {
+  if (!(user && await user.matchPassword(password))) {
     next(new ErrorCreator('invalid user or password', 401))
   } else {
     // token data
@@ -68,5 +61,66 @@ export const login = async (req, res, next) => {
     const token = jwt.sign(userForToken, process.env.SECRET_WORD)
 
     res.send(new ResponseCreator('Login Successfully', 200, { token, user }))
+  }
+}
+
+export const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body
+    if (!email) { return next(new ErrorCreator('Please enter your email', 400)) }
+
+    const user = await User.findOne({ email })
+    if (!user) { return next(new ErrorCreator('No email could not be send', 404)) }
+
+    const resetToken = user.getResetPasswordToken()
+    await user.save()
+
+    const resetUrl = `${process.env.VERIFICATIONLINK}/${resetToken}`
+    const message = forgotMessage(resetUrl, user)
+
+    const result = await sendEmail({
+      to: user.email,
+      subject: 'Password Reset Request',
+      text: message
+    })
+
+    console.log(7)
+    if (result) {
+      res.send(new ResponseCreator(`An email has been sent to ${email} with further instructions.`, 200, {}))
+    }
+  } catch (err) {
+    console.error('ERROR: AUTHCONTROLLER(ForgotPassword)')
+    next(err)
+  }
+}
+
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { password, resetToken } = req.body
+
+    if (!resetToken || !password) { return next(new ErrorCreator('Invalid Request', 400)) }
+
+    const resetPasswordToken = crypto
+      .createHash('sha256')
+      .update(resetToken)
+      .digest('hex')
+
+    const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpire: { $gt: Date.now() }
+    })
+
+    if (!user) { return next(new ErrorCreator('Invalid Token or Expired', 400)) }
+
+    user.password = password
+    user.resetPasswordToken = undefined
+    user.resetPasswordExpire = undefined
+
+    await user.save()
+
+    res.send(new ResponseCreator('Password has been reset', 200, {}))
+  } catch (err) {
+    console.error('ERROR: AUTHCONTROLLER(resetPassword)')
+    next(err)
   }
 }

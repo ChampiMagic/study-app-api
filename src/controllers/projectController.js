@@ -104,9 +104,9 @@ export const deleteProject = async (req, res, next) => {
 }
 
 export const updateProject = async (req, res, next) => {
-  const { projectId, name, tagId } = req.body
+  const { projectId, name, tag } = req.body
   console.log(req.body)
-  const updatedProject = await Project.findByIdAndUpdate(projectId, { name, tag: tagId })
+  const updatedProject = await Project.findByIdAndUpdate(projectId, { name, tag })
 
   if (!updatedProject) {
     return next(new ErrorCreator('Project not found', 404))
