@@ -10,6 +10,18 @@ const schema = new Schema({
   answer: {
     type: String,
     required: true
+  },
+  movedOn: {
+    type: Date,
+    default: new Date()
+  },
+  currentBox: {
+    type: String,
+    required: true
+  },
+  nextBox: {
+    type: String,
+    required: true
   }
 }, {
   versionKey: false
