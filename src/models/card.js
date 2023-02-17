@@ -13,7 +13,7 @@ const schema = new Schema({
   },
   movedOn: {
     type: Date,
-    default: new Date()
+    required: true
   },
   currentBox: {
     type: String,
@@ -28,5 +28,11 @@ const schema = new Schema({
 })
 
 schema.plugin(mongooseUniqueValidator)
+
+// methods
+schema.methods.isReady = function () {
+  const currentDate = new Date()
+  return this.movedOn <= currentDate
+}
 
 export default model('Card', schema)

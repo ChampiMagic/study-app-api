@@ -5,7 +5,8 @@ import Project from '../models/project.js'
 // import constructors
 import { ErrorCreator, ResponseCreator } from '../../utils/responseCreator.js'
 
-// other dependencies
+// Utils imports
+import { getDate } from '../../utils/dateManager.js'
 
 //  -----PRIVATE CONTROLLERS-----  //
 export const createCard = async (req, res, next) => {
@@ -17,10 +18,9 @@ export const createCard = async (req, res, next) => {
     }
     const currentBox = project.boxes[0]._id
     const nextBox = project.boxes[1]._id
+    const movedOn = getDate(0)
 
-    if (project.boxes[0].isEmpty) project.boxes[0].isEmpty = false
-
-    const newCard = await Card.create({ question, answer, currentBox, nextBox })
+    const newCard = await Card.create({ question, answer, currentBox, nextBox, movedOn })
 
     project.boxes[0].cards.push(newCard.id)
     await project.save()
@@ -36,7 +36,7 @@ export const moveCard = async (req, res, next) => {
   const { cardId, projectId, isCorrect } = req.body
 
   try {
-    const project = await Project.findById(projectId)
+    const project = await Project.findById(projectId).populate({ path: 'boxes.cards', model: 'Card' })
 
     if (!project) {
       return next(new ErrorCreator('Project Not Found', 404))
@@ -94,13 +94,21 @@ export const moveCard = async (req, res, next) => {
       project.boxes[newBoxIndex].cards.push(cardId)
 
       // IsEmpty verification
-      if (!project.boxes[currentBoxIndex].cards.length) {
-        project.boxes[currentBoxIndex].isEmpty = true
-      }
-      if (project.boxes[newBoxIndex].cards.length) {
-        project.boxes[newBoxIndex].isEmpty = false
-      }
+      project.boxes = project.boxes.map(b => {
+        if (!b.cards.length) {
+          b.isEmpty = true
+          return b
+        } else {
+          let isEmpty = true
+          b.cards.forEach(c => {
+            if (c.isReady()) isEmpty = false
+          })
 
+          b.isEmpty = isEmpty
+          return b
+        }
+      })
+      console.log(project)
       // New next and current box for card model
       card.currentBox = card.nextBox
       if (project.boxes[newBoxIndex + 1] === undefined) {
@@ -109,10 +117,12 @@ export const moveCard = async (req, res, next) => {
         card.nextBox = project.boxes[newBoxIndex + 1]._id
       }
 
+      // Updating card Time
+      card.movedOn = getDate(newBoxIndex)
+
       await card.save()
 
       await project.save()
-      await project.populate({ path: 'boxes.cards', model: 'Card' })
 
       res.send(new ResponseCreator('Successfully moved card', 200, { project }))
     } else {
@@ -133,16 +143,27 @@ export const moveCard = async (req, res, next) => {
       project.boxes[0].cards.push(cardId)
 
       // IsEmpty verification
-      if (!project.boxes[currentBoxIndex].cards.length) {
-        project.boxes[currentBoxIndex].isEmpty = true
-      }
-      if (project.boxes[0].cards.length) {
-        project.boxes[0].isEmpty = false
-      }
+      project.boxes = project.boxes.map(b => {
+        if (!b.cards.length) {
+          b.isEmpty = true
+          return b
+        } else {
+          let isEmpty = true
+          b.cards.forEach(c => {
+            if (c.isReady()) isEmpty = false
+          })
+
+          b.isEmpty = isEmpty
+          return b
+        }
+      })
 
       // New next and current box for card model
       card.currentBox = project.boxes[0]._id
       card.nextBox = project.boxes[1]._id
+
+      // Updating card Time
+      card.movedOn = getDate(0)
 
       await card.save()
 
@@ -181,6 +202,11 @@ export const randomCard = async (req, res, next) => {
 
     const actualBox = project.boxes[box]
     if (!actualBox.cards.length) return next(new ErrorCreator('Box is empty', 404))
+
+    const currentTime = new Date()
+
+    actualBox.cards = actualBox.cards.filter((c) => c.movedOn <= currentTime)
+
     const randomCard = actualBox.cards[Math.floor(Math.random() * actualBox.cards.length)]
 
     res.send(new ResponseCreator('Successfully', 200, { card: randomCard }))
