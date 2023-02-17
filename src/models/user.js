@@ -1,5 +1,7 @@
 import mongoose from 'mongoose'
 import mongooseUniqueValidator from 'mongoose-unique-validator'
+import bcrypt from 'bcrypt'
+import crypto from 'crypto'
 const { Schema, model } = mongoose
 
 const schema = new Schema({
@@ -14,11 +16,13 @@ const schema = new Schema({
     unique: true,
     minlength: 3
   },
-  passwordHash: {
+  password: {
     type: String,
     required: true,
-    minlength: 8
+    minlength: 4
   },
+  resetPasswordToken: String,
+  resetPasswordExpire: Date,
   avatar: {
     type: String,
     required: false
@@ -42,6 +46,36 @@ const schema = new Schema({
 
 schema.plugin(mongooseUniqueValidator)
 
+schema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password)
+}
+
+// encrypt password before saving into mongoDB
+schema.methods.encryptPassword = async function (password) {
+  const salt = await bcrypt.genSalt(10)
+  return await bcrypt.hash(password, salt)
+}
+
+schema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    next()
+  }
+  const salt = await bcrypt.genSalt(10)
+  this.password = await bcrypt.hash(this.password, salt)
+})
+
+schema.methods.getResetPasswordToken = function () {
+  const resetToken = crypto.randomBytes(20).toString('hex')
+
+  this.resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex')
+
+  this.resetPasswordExpire = Date.now() + 10 * (60 * 1000) // Ten Minutes
+
+  return resetToken
+}
 schema.set('toJSON', {
   transform: (document, returnedObject) => {
     // we dont send the user password

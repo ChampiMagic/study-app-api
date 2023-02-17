@@ -24,6 +24,12 @@ const schema = new Schema({
         }
       ]
     }
+  ],
+  completeBox: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Card'
+    }
   ]
 }, {
   versionKey: false

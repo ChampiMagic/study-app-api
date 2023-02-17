@@ -2,8 +2,8 @@
 import { Router } from 'express'
 
 // Import Controllers
-import { register, login } from '../controllers/authController.js'
-import { createProject, deleteProject, getAllProjects, getProjectById, getProjectsByName } from '../controllers/projectController.js'
+import { register, login, forgotPassword, resetPassword } from '../controllers/authController.js'
+import { createProject, deleteProject, getAllProjects, getProjectById, getProjectsByName, updateProject } from '../controllers/projectController.js'
 import { createCard, deleteCard, getAllCards, getCardByName, moveCard, randomCard, updateCard } from '../controllers/cardController.js'
 import { createTag, deleteTag, getTags, getTagsByName, updateTag } from '../controllers/tagController.js'
 
@@ -15,6 +15,8 @@ const router = Router()
 // Auth Routes
 router.post('/register', register)
 router.post('/login', login)
+router.put('/forgot-password', forgotPassword)
+router.put('/reset-password', resetPassword)
 
 // PRIVATE ROUTES //
 
@@ -24,6 +26,7 @@ router.get('/projects', protect, getAllProjects)
 router.get('/project/:id', protect, getProjectById)
 router.get('/search-projects/:name', protect, getProjectsByName)
 router.delete('/delete-project/:projectId', protect, deleteProject)
+router.put('/update-project', protect, updateProject)
 
 // Card Routes
 router.post('/create-card', protect, createCard)
