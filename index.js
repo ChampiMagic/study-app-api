@@ -4,6 +4,11 @@ import 'dotenv/config'
 import errorHandler from './src/middleware/errorHandler.js'
 import router from './src/routes/index.js'
 
+// swagger
+import swaggerUi from 'swagger-ui-express'
+import swaggerJsDoc from 'swagger-jsdoc'
+import swaggerSpec from './utils/swaggerSpec.js'
+
 // initialization of MongoDB
 import './db.js'
 
@@ -16,6 +21,9 @@ app.use(express.json())
 app.use(cors())
 
 app.use('/api', router)
+
+// swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerJsDoc(swaggerSpec)))
 
 // Config of App Error Middleware
 app.use(errorHandler)
