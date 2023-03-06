@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 import mongooseUniqueValidator from 'mongoose-unique-validator'
 import bcrypt from 'bcrypt'
 import crypto from 'crypto'
+import { UNVERIFIED } from '../constants/index.js'
 const { Schema, model } = mongoose
 
 const schema = new Schema({
@@ -26,6 +27,15 @@ const schema = new Schema({
   avatar: {
     type: String,
     required: false
+  },
+  code: {
+    type: String,
+    required: true
+  },
+  status: {
+    type: Number,
+    required: true,
+    default: UNVERIFIED
   },
   projects: [
     {
