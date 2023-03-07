@@ -19,7 +19,7 @@ import { UNVERIFIED, VERIFIED } from '../constants/index.js'
 export const register = async (req, res, next) => {
   const { username, email, password } = req.body
 
-  const user = await User.findOne({ username })
+  const user = await User.findOne({ email })
 
   if (user) {
     next(new ErrorCreator('user already exists', 409))
