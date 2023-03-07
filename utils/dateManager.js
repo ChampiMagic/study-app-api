@@ -1,9 +1,9 @@
 // CONSTANTS
 const days = [
   1,
-  2,
-  15,
-  30
+  1,
+  1,
+  1
 ]
 
 export const getDate = (index) => {

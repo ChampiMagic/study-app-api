@@ -25,7 +25,10 @@ export const createCard = async (req, res, next) => {
     project.boxes[0].cards.push(newCard.id)
     await project.save()
 
-    return res.send(new ResponseCreator('success', 200, { project, card: newCard }))
+    const currentProject = await Project.findById(projectId)
+      .populate({ path: 'tag', model: 'Tag', transform: (doc, id) => { return doc == null ? id : doc } })
+      .populate({ path: 'boxes.cards', model: 'Card', transform: (doc, id) => { return doc == null ? id : doc } })
+    return res.send(new ResponseCreator('success', 200, { project: currentProject, card: newCard }))
   } catch (err) {
     console.error('ERROR: CARDCONTROLLER(createCard)')
     next(err)
@@ -36,7 +39,9 @@ export const moveCard = async (req, res, next) => {
   const { cardId, projectId, isCorrect } = req.body
 
   try {
-    const project = await Project.findById(projectId).populate({ path: 'boxes.cards', model: 'Card' })
+    const project = await Project.findById(projectId)
+      .populate({ path: 'tag', model: 'Tag', transform: (doc, id) => { return doc == null ? id : doc } })
+      .populate({ path: 'boxes.cards', model: 'Card', transform: (doc, id) => { return doc == null ? id : doc } })
 
     if (!project) {
       return next(new ErrorCreator('Project Not Found', 404))
@@ -71,9 +76,11 @@ export const moveCard = async (req, res, next) => {
         await card.save()
 
         await project.save()
-        await project.populate({ path: 'boxes.cards', model: 'Card' })
+        const currentProject = await Project.findById(projectId)
+          .populate({ path: 'tag', model: 'Tag', transform: (doc, id) => { return doc == null ? id : doc } })
+          .populate({ path: 'boxes.cards', model: 'Card', transform: (doc, id) => { return doc == null ? id : doc } })
 
-        return res.send(new ResponseCreator('Card Completed', 200, { project }))
+        return res.send(new ResponseCreator('Card Completed', 200, { project: currentProject }))
       }
       // Check if the current and new boxId exist in the boxes array
       const currentBoxIndex = project.boxes.findIndex(box => box._id.toString() === card.currentBox)
@@ -121,10 +128,12 @@ export const moveCard = async (req, res, next) => {
       card.movedOn = getDate(newBoxIndex)
 
       await card.save()
-
       await project.save()
+      const currentProject = await Project.findById(projectId)
+        .populate({ path: 'tag', model: 'Tag', transform: (doc, id) => { return doc == null ? id : doc } })
+        .populate({ path: 'boxes.cards', model: 'Card', transform: (doc, id) => { return doc == null ? id : doc } })
 
-      res.send(new ResponseCreator('Successfully moved card', 200, { project }))
+      res.send(new ResponseCreator('Successfully moved card', 200, { project: currentProject }))
     } else {
       // Check if the current exist in the boxes array
       const currentBoxIndex = project.boxes.findIndex(box => box._id.toString() === card.currentBox)
