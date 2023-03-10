@@ -8,6 +8,15 @@ import { ErrorCreator, ResponseCreator } from '../../utils/responseCreator.js'
 // Utils imports
 import { getDate } from '../../utils/dateManager.js'
 
+// OpenAi imports
+import { Configuration, OpenAIApi } from 'openai'
+
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY
+})
+
+const openai = new OpenAIApi(configuration)
+
 //  -----PRIVATE CONTROLLERS-----  //
 export const createCard = async (req, res, next) => {
   const { question, answer, projectId } = req.body
@@ -139,10 +148,6 @@ export const moveCard = async (req, res, next) => {
       const currentBoxIndex = project.boxes.findIndex(box => box._id.toString() === card.currentBox)
       if (currentBoxIndex === -1) return next(new ErrorCreator('Current Box Not Found', 404))
 
-      // Check if the cardId is already in the first box
-      const findCard = project.boxes[0].cards.find(card => card._id.toString() === cardId)
-      if (findCard) return next(new ErrorCreator('Card already in first Box', 400))
-
       // Check if the cardId exists in the current box
       const cardIndex = project.boxes[currentBoxIndex].cards.findIndex(card => card._id.toString() === cardId)
       if (cardIndex === -1) return next(new ErrorCreator('Card Not Found in current Box', 404))
@@ -175,8 +180,12 @@ export const moveCard = async (req, res, next) => {
       card.movedOn = getDate(0)
 
       await card.save()
+      await project.save()
+      const currentProject = await Project.findById(projectId)
+        .populate({ path: 'tag', model: 'Tag', transform: (doc, id) => { return doc == null ? id : doc } })
+        .populate({ path: 'boxes.cards', model: 'Card', transform: (doc, id) => { return doc == null ? id : doc } })
 
-      res.send(new ResponseCreator('Successfully moved card', 200, { project }))
+      res.send(new ResponseCreator('Successfully moved card', 200, { project: currentProject }))
     }
   } catch (err) {
     console.error('ERROR: CARDCONTROLLER(moveCard)', err)
@@ -294,6 +303,32 @@ export const deleteCard = async (req, res, next) => {
     res.send(new ResponseCreator('Successfully Card Deleted', 200, { }))
   } catch (err) {
     console.error('ERROR: CARDCONTROLLER(deleteCard)')
+    next(err)
+  }
+}
+
+export const verifyAnswer = async (req, res, next) => {
+  const { question, answer } = req.query
+
+  if (!question || !answer) {
+    return next(new ErrorCreator('Data missing', 400))
+  }
+
+  try {
+    const prompt = `Question: ${question}\nAnswer: ${answer}\nIs the answer correct? True or false.`
+    const response = await openai.createCompletion({
+      model: 'text-davinci-003',
+      prompt,
+      max_tokens: 7,
+      temperature: 0
+    })
+
+    const isCorrect = response.data.choices[0].text.toLowerCase().includes('true')
+    console.log('IsCorrect ', isCorrect)
+    res.send(new ResponseCreator('Card Verified', 200, { isCorrect }))
+  } catch (err) {
+    console.error('ERROR: CARDCONTROLLER(verifyCard)')
+    console.log(err.response)
     next(err)
   }
 }

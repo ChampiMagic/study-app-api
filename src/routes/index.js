@@ -4,7 +4,7 @@ import { Router } from 'express'
 // Import Controllers
 import { register, login, forgotPassword, resetPassword, confirm, confirmationSender } from '../controllers/authController.js'
 import { createProject, deleteProject, getAllProjects, getProjectById, getProjectsByName, updateProject } from '../controllers/projectController.js'
-import { createCard, deleteCard, getAllCards, getCardByName, moveCard, randomCard, updateCard } from '../controllers/cardController.js'
+import { createCard, deleteCard, getAllCards, getCardByName, moveCard, randomCard, updateCard, verifyAnswer } from '../controllers/cardController.js'
 import { createTag, deleteTag, getTags, getTagsByName, updateTag } from '../controllers/tagController.js'
 
 import { protect } from '../middleware/protect.js'
@@ -37,6 +37,7 @@ router.put('/update-card', protect, updateCard)
 router.get('/random-card', protect, randomCard)
 router.get('/card', protect, getAllCards)
 router.get('/search-card', protect, getCardByName)
+router.get('/verify-card', protect, verifyAnswer)
 router.delete('/delete-card', protect, deleteCard)
 
 // Tag Routes

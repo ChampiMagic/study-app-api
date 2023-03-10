@@ -22,7 +22,7 @@ export const register = async (req, res, next) => {
   const user = await User.findOne({ email })
 
   if (user) {
-    next(new ErrorCreator('user already exists', 409))
+    return next(new ErrorCreator('user already exists', 409))
   }
 
   // Generar el código
