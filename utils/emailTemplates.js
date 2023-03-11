@@ -7,7 +7,7 @@ export const forgotMessage = (resetUrl, user) => {
               "
             >
               <h2 class="title" style="text-align: center">Reset Your Password</h2>
-              <h4>Hello ${user.name},</h4>
+              <h4>Hello ${user.username},</h4>
               <p>
                 Tap the link below to reset your account password. If you didn't request a
                 new password, you can safely delete this email.
