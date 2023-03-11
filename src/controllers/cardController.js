@@ -299,8 +299,14 @@ export const deleteCard = async (req, res, next) => {
     project.save()
 
     await Card.findByIdAndDelete(cardId)
+    const currentProject = await Project.findById(projectId)
+      .populate({ path: 'boxes.cards', model: 'Card', transform: (doc, id) => { return doc == null ? id : doc } })
+    let cards = []
 
-    res.send(new ResponseCreator('Successfully Card Deleted', 200, { }))
+    currentProject.boxes.forEach(box => {
+      cards = [...box.cards, ...cards]
+    })
+    res.send(new ResponseCreator('Successfully Card Deleted', 200, { cards }))
   } catch (err) {
     console.error('ERROR: CARDCONTROLLER(deleteCard)')
     next(err)
