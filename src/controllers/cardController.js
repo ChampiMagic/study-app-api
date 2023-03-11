@@ -314,14 +314,15 @@ export const deleteCard = async (req, res, next) => {
 }
 
 export const verifyAnswer = async (req, res, next) => {
-  const { question, answer } = req.query
+  const { answer1, answer2 } = req.query
 
-  if (!question || !answer) {
+  if (!answer1 || !answer2) {
     return next(new ErrorCreator('Data missing', 400))
   }
 
   try {
-    const prompt = `Question: ${question}\nAnswer: ${answer}\nIs the answer correct? True or false.`
+    const prompt = `Answer1:${answer1} Answer2:${answer2} .Is Answer1 similar to Answer2 ? only response True or False.`
+
     const response = await openai.createCompletion({
       model: 'text-davinci-003',
       prompt,
@@ -330,6 +331,7 @@ export const verifyAnswer = async (req, res, next) => {
     })
 
     const isCorrect = response.data.choices[0].text.toLowerCase().includes('true')
+
     console.log('IsCorrect ', isCorrect)
     res.send(new ResponseCreator('Card Verified', 200, { isCorrect }))
   } catch (err) {
